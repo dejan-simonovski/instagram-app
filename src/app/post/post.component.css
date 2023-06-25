@@ -1,0 +1,19 @@
+.postDiv{
+    width: 150px;
+    height: 220px;
+    border: 1px solid black;
+    display: inline-block;
+    margin: 10px;
+    border-radius: 25px;
+    white-space: wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+a:link, a:visited, a:hover{
+    text-decoration: none;
+    color: black;
+}
+.preview{
+  width: 150px;
+  height: 150px;
+}
