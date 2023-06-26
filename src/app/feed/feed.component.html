@@ -5,7 +5,7 @@
         [title]="post.title"
         [url]="post.url"
         [thumbnailUrl]="post.thumbnailUrl"
-        (deletePostEvent)="onPostDelete(post.id)"
+        (deletePostEvent)="onPostDelete($event)"
         (imageUpdateEvent)="updateUrl($event)"
       ></post>
     </div>
