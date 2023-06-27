@@ -88,6 +88,7 @@ export class FeedService {
       postToUpdate.thumbnailUrl = postData.thumbnailUrl;
       postToUpdate.url = postData.url;
       postToUpdate.title = postData.title;
+      postToUpdate.albumId = postData.albumId;
       return of(postToUpdate);
     } else {
       const url = `${this.feedUrl}/${postId}`;

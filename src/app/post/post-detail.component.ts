@@ -16,7 +16,19 @@ import { SharedService } from '../shared/shared.service';
     position: relative;
     right: 50px;
     top: 20px;
-  }`]
+  }
+
+  .details{
+    width: 500px;
+    height: 20px;
+    overflow: scroll;
+  }
+  
+  .imageDetails{
+    max-width: 100%;
+    max-height: 400px; 
+  }
+  `]
 })
 export class PostDetailComponent {
   post: IFeed | undefined;
@@ -56,6 +68,7 @@ export class PostDetailComponent {
     if (this.post) {
       const eventData = {
         id: this.post.id,
+        albumId: this.post.albumId,
         url: this.post.url,
         title: this.post.title
       };

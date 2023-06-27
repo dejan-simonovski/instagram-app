@@ -63,6 +63,7 @@ export class FeedComponent implements OnInit {
     this.sharedService.imageUpdateEvent.subscribe((eventData) => {
       this.feedService.updatePost(eventData.id, {
         id: eventData.id,
+        albumId: eventData.albumId,
         title: eventData.title,
         url: eventData.url,
         thumbnailUrl: eventData.url
@@ -113,6 +114,7 @@ export class FeedComponent implements OnInit {
   addPost(): void {
     const newPost: IFeed = {
       id: this.generateUniqueId(),
+      albumId: 1,
       title: 'Untitled',
       url: ' Enter Photo ',
       thumbnailUrl: ' Enter Photo '

@@ -2,12 +2,17 @@
 <div class="postDetails">
   <div>
     <ng-container *ngIf="post">
-      <input *ngIf="isEditing; else notEditing" type="text" [(ngModel)]="post.title" placeholder="Enter a title">
-      <br>
+      <div *ngIf="isEditing; else notEditing">
+        <input class='details' type="text" [(ngModel)]="post.title" placeholder="Enter a title"><br>
+        <input class='details' type="number" min="0" [(ngModel)]="post.albumId" placeholder="Enter album Id"><br>
+        <input class='details' type="text" [(ngModel)]="post.url" placeholder="Enter image url"><br>
+      </div>
       <ng-template #notEditing>
-        <p>{{ post.title }}</p>
+        <p class='details'>{{ post.title }}</p>
+        <p class='details'>{{ post.albumId }}</p>
+        <p class='details'>{{ post.url }}</p>
       </ng-template>
-      <img [src]="post.url" alt="Post Image"><br>
+      <img [src]="post.url" class='imageDetails' alt="Post Image"><br>
       <input *ngIf="isEditing" type="file" (change)="handleUpdate($event)">
       <br>
     </ng-container>
