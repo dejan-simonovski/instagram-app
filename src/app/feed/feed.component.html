@@ -13,5 +13,9 @@
 </div>
 <div id="buttons">
   <button class="postButton" [disabled]="currentPage <= 1" (click)="loadPrevious()">Previous</button>
-  <button (click)="loadNext()" class="postButton"> Next </button>
+  <select class="pageSelect" [(ngModel)]="currentPage" (ngModelChange)="loadPage()">
+    <option *ngFor="let page of totalPagesArray" [ngValue]="page">{{ page }}</option>
+  </select>
+  <button class="postButton" [disabled]="currentPage >= totalPages" (click)="loadNext()">Next</button>
 </div>
+

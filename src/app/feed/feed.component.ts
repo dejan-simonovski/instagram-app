@@ -31,9 +31,9 @@ import { Router } from '@angular/router';
 export class FeedComponent implements OnInit {
   errorMessage: string = '';
   currentPage: number = 1;
-  itemsPerPage: number = 15; // Set the number of items to load per page
+  itemsPerPage: number = 15;
   posts: IFeed[] = [];
-  addedPosts: number = 0;
+  totalPages: number = 0;
 
   constructor(
     private feedService: FeedService,
@@ -41,15 +41,20 @@ export class FeedComponent implements OnInit {
     private router: Router
   ) {}
 
+  totalPagesArray: number[] = [];
+
   loadPosts(): void {
     this.feedService.getFeed(this.currentPage, this.itemsPerPage).subscribe({
       next: (posts) => {
         this.posts = posts;
+        this.feedService.getTotalPosts().subscribe((totalPosts) => {
+          this.calculateTotalPages(totalPosts, this.itemsPerPage);
+        });
       },
       error: (err) => (this.errorMessage = err)
     });
   }
-
+  
   ngOnInit(): void {
     this.sharedService.deletePostEvent.subscribe((postId: number) => {
       this.onPostDelete(postId);
@@ -106,7 +111,6 @@ export class FeedComponent implements OnInit {
   }
 
   addPost(): void {
-    this.addedPosts++;
     const newPost: IFeed = {
       id: this.generateUniqueId(),
       title: 'Untitled',
@@ -116,7 +120,7 @@ export class FeedComponent implements OnInit {
     
     this.feedService.addPost(newPost).subscribe(
       (response) => {
-        //this.router.navigate(['/post', newPost.id]);
+        this.router.navigate(['/post', newPost.id]);
       },
       (error) => {
         this.errorMessage = error;
@@ -126,5 +130,16 @@ export class FeedComponent implements OnInit {
   generateUniqueId(): number {
     return Date.now();
   }
+
+  loadPage(): void {
+    this.feedService.toggleLoad();
+    this.loadPosts();
+  }
+  
+  calculateTotalPages(totalPosts: number, itemsPerPage: number): void {
+    this.totalPages = this.feedService.countPages(totalPosts, itemsPerPage);
+    this.totalPagesArray = Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+  
 
 }

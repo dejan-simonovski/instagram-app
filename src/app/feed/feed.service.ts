@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, of, tap, throwError } from 'rxjs';
+import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
 import { IFeed } from './feed';
 
 @Injectable({
@@ -73,6 +73,14 @@ export class FeedService {
     }
   }
 
+  getTotalPosts(): Observable<number> {
+    return this.http.get<IFeed[]>(this.feedUrl).pipe(
+      map((posts) => posts.length),
+      catchError(this.handleError)
+    );
+  }
+  
+
   updatePost(postId: number, postData: IFeed): Observable<IFeed> {
     const postToUpdate = this.posts.find((post) => post.id === postId);
     if (postToUpdate) {
@@ -104,9 +112,6 @@ export class FeedService {
     return this.posts;
   }
 
-  countPages(totalPosts: number, itemsPerPage: number): number {
-    return Math.ceil(totalPosts / itemsPerPage);
-  }
   
   addPost(newPost: IFeed): Observable<IFeed> {
     return this.http.post<IFeed>(this.feedUrl, newPost).pipe(
@@ -117,5 +122,9 @@ export class FeedService {
       catchError(this.handleError)
     );
   }
-    
+
+  countPages(totalPosts: number, itemsPerPage: number): number {
+    return Math.ceil(totalPosts / itemsPerPage);
+  }
+  
 }
