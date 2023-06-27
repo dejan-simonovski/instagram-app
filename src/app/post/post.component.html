@@ -1,5 +1,6 @@
 <div class="postDiv">
-    <a (click)="openDialog()"><img class="preview" [src]="thumbnailUrl">
-        <p> {{ title }} </p>
-    </a>
+  <a [routerLink]="['/post/', id]">
+    <img class="preview" [src]="thumbnailUrl">
+    <p>{{ title }}</p>
+  </a>
 </div>

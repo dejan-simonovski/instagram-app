@@ -1,14 +1,17 @@
-<div class="postContainer" *ngFor="let post of posts">
-    <div>
-      <post
-        [id]="post.id"
-        [title]="post.title"
-        [url]="post.url"
-        [thumbnailUrl]="post.thumbnailUrl"
-        (deletePostEvent)="onPostDelete($event)"
-        (imageUpdateEvent)="updateUrl($event)"
-      ></post>
-    </div>
+<div id="addButton">
+  <button (click)="addPost()"> Add Post </button>
 </div>
-<div id="loadMore"><button (click)="loadMorePosts()"> Load More </button></div>
-  
+<div class="postContainer" *ngFor="let post of posts">
+  <div>
+    <post
+      [id]="post.id"
+      [title]="post.title"
+      [url]="post.url"
+      [thumbnailUrl]="post.thumbnailUrl"
+    ></post>
+  </div>
+</div>
+<div id="buttons">
+  <button class="postButton" [disabled]="currentPage <= 1" (click)="loadPrevious()">Previous</button>
+  <button (click)="loadNext()" class="postButton"> Next </button>
+</div>

@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IFeed } from './feed';
 import { FeedService } from './feed.service';
+import { SharedService } from '../shared/shared.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'feed',
@@ -10,74 +12,119 @@ import { FeedService } from './feed.service';
       display: inline-block;
     }
 
-    #loadMore{
+    #buttons{
       display: flex;
       justify-content: center;
     }
 
-    #loadMore button{
-      padding: 10px 100px 10px 100px;
-      margin: 30px 0 50px 0;
+    .postButton{
+      padding: 10px;
+      margin: 5px;
+    }
+    
+    #addButton{
+      display: flex;
+      justify-content: center;
     }
   `]
 })
 export class FeedComponent implements OnInit {
   errorMessage: string = '';
-  posts: IFeed[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 50; // Set the number of items to load per page
+  itemsPerPage: number = 15; // Set the number of items to load per page
+  posts: IFeed[] = [];
+  addedPosts: number = 0;
 
   constructor(
     private feedService: FeedService,
+    private sharedService: SharedService,
+    private router: Router
   ) {}
-
-  ngOnInit(): void {
-    this.loadPosts();
-  }
 
   loadPosts(): void {
     this.feedService.getFeed(this.currentPage, this.itemsPerPage).subscribe({
       next: (posts) => {
-        this.posts = [...this.posts, ...posts]; // add new posts to existing posts
+        this.posts = posts;
       },
       error: (err) => (this.errorMessage = err)
     });
   }
 
-  onPostDelete(postId: number): void {
-    this.feedService.deletePost(postId).subscribe(() => {
-      const index = this.posts.findIndex((post) => post.id === postId);
-      if (index !== -1) {
-        this.posts.splice(index, 1);
-      }
-    },
-    (error) => {
-      this.errorMessage = error;
+  ngOnInit(): void {
+    this.sharedService.deletePostEvent.subscribe((postId: number) => {
+      this.onPostDelete(postId);
     });
-  }
 
-  loadMorePosts(): void {
-    this.currentPage++;
+    this.sharedService.imageUpdateEvent.subscribe((eventData) => {
+      this.feedService.updatePost(eventData.id, {
+        id: eventData.id,
+        title: eventData.title,
+        url: eventData.url,
+        thumbnailUrl: eventData.url
+      }).subscribe(
+        (response) => {
+          const postToUpdate = this.posts.find((post) => post.id === eventData.id);
+          if (postToUpdate) {
+            postToUpdate.thumbnailUrl = eventData.url;
+            postToUpdate.url = eventData.url;
+            postToUpdate.title = eventData.title;
+          }
+        },
+        (error) => {
+          this.errorMessage = error;
+        }
+      );
+    });
+
     this.loadPosts();
   }
 
-  updateUrl(eventData: { id: number; url: string; title: string }): void {
-    this.feedService.updatePost(eventData.id, {
-      id: eventData.id,
-      thumbnailUrl: eventData.url,
-      url: eventData.url,
-      title: eventData.title
-    }).subscribe(() => {
-      const postToUpdate = this.posts.find((post) => post.id === eventData.id);
-      if (postToUpdate) {
-        postToUpdate.thumbnailUrl = eventData.url;
-        postToUpdate.url = eventData.url;
-        postToUpdate.title = eventData.title;
+  onPostDelete(postId: number): void {
+    this.feedService.deletePost(postId).subscribe(
+      (response) => {
+        const index = this.posts.findIndex((post) => post.id === postId);
+        if (index !== -1) {
+          this.posts.splice(index, 1);
+        }
+      },
+      (error) => {
+        this.errorMessage = error;
       }
-    },
-    (error) => {
-      this.errorMessage = error;
-    });
+    );
+  }
+
+  loadPrevious(): void {
+    this.currentPage--;
+    this.feedService.toggleLoad();
+    this.loadPosts();
+  }
+
+  loadNext(): void {
+    this.currentPage++;
+    this.feedService.toggleLoad();
+    this.loadPosts();
+  }
+
+  addPost(): void {
+    this.addedPosts++;
+    const newPost: IFeed = {
+      id: this.generateUniqueId(),
+      title: 'Untitled',
+      url: ' Enter Photo ',
+      thumbnailUrl: ' Enter Photo '
+    };
+    
+    this.feedService.addPost(newPost).subscribe(
+      (response) => {
+        //this.router.navigate(['/post', newPost.id]);
+      },
+      (error) => {
+        this.errorMessage = error;
+      }
+    );
+  }
+  generateUniqueId(): number {
+    return Date.now();
   }
 
 }

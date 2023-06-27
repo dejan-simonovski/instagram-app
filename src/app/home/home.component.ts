@@ -1,9 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css']
+    template: '<feed></feed>'
 })
 
-export class HomeComponent {
-}
+export class HomeComponent {}

@@ -28,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
     RouterModule.forRoot([
       { path: 'home', component: HomeComponent},
+      { path: 'post/:id', component: PostDetailComponent },
       { path: '', redirectTo: 'home', pathMatch: 'full'},
       { path: '**', redirectTo: 'home', pathMatch: 'full'}
     ]),

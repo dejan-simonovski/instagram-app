@@ -1,53 +1,80 @@
-import { Component, Inject, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IFeed } from '../feed/feed';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FeedService } from '../feed/feed.service';
+import { SharedService } from '../shared/shared.service';
 
 @Component({
-    templateUrl: './post-detail.component.html',
-    styleUrls: [`./post-detail.component.css`]
+  templateUrl: './post-detail.component.html',
+  styles: [`
+  .postDetails{
+    display: flex;
+    justify-content: center;
+  }
+  
+  #postDetailBack{
+    position: relative;
+    right: 50px;
+    top: 20px;
+  }`]
 })
-
 export class PostDetailComponent {
-    
-    post: IFeed | undefined;
-    @Output() deletePostEvent = new EventEmitter<number>();
-    @Output() imageUpdateEvent = new EventEmitter<{ id: number, url: string }>();
-    isEditing: boolean = false;
-    
-    constructor(
-      @Inject(MAT_DIALOG_DATA) public data: any
-    ) {}
-    
-    deletePost(): void {
-      const confirmation = confirm('Are you sure you want to delete this post?');
-      if (confirmation) {
-        const postId = this.data.post.id;
-        this.deletePostEvent.emit(postId);
-      }
-    }
-  
-    toggleEdit(): void{
-      this.isEditing = !this.isEditing;
-    }
+  post: IFeed | undefined;
+  isEditing: boolean = false;
 
-    saveEdit(): void {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private sharedService: SharedService,
+    private feedService: FeedService) {
+      this.route.params.subscribe((params) => {
+        const postId = +params['id'];
+        this.feedService.getPost(postId).subscribe(
+          (post) => {
+            this.post = post;
+          },
+          (error) => {
+            console.log('Error retrieving post:', error);
+          }
+        );
+      });
+  }
+
+  deletePost(): void {
+    const confirmation = confirm('Are you sure you want to delete this post?');
+    if (confirmation && this.post?.id) {
+      this.sharedService.deletePost(this.post.id);
+    }
+    this.router.navigate(['/home']);
+  }
+
+  toggleEdit(): void {
+    this.isEditing = !this.isEditing;
+  }
+
+  saveEdit(): number {
+    if (this.post) {
       const eventData = {
-        id: this.data.post.id,
-        url: this.data.post.url,
-        title: this.data.post.title
+        id: this.post.id,
+        url: this.post.url,
+        title: this.post.title
       };
-      this.imageUpdateEvent.emit(eventData);
+      this.sharedService.updatePost(eventData);
     }
+    return 1;
+  }
 
-    handleUpdate(event: any): void {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-  
-      reader.onload = (e: any) => {
-        const base64Image = e.target.result;
-        this.data.post.url = base64Image;
-      };
-  
-      reader.readAsDataURL(file);
-    }
+  handleUpdate(event: any): void {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      const base64Image = e.target.result;
+      if (this.post) {
+        this.post.url = base64Image;
+      }
+    };
+
+    reader.readAsDataURL(file);
+  }
 }

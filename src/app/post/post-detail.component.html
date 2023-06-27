@@ -1,14 +1,17 @@
+<button id="postDetailBack" [routerLink]="'/home'"> Back </button>
 <div class="postDetails">
   <div>
-    <input *ngIf="isEditing; else notEditing" type="text" [(ngModel)]="data.post.title" placeholder="Enter a title">
-    <br>
-    <ng-template #notEditing>
-      <p>{{ data.post.title }}</p>
-    </ng-template>
-    <img [src]="data.post.url" alt="Post Image"><br>
-    <input *ngIf="isEditing" type="file" (change)="handleUpdate($event)">
-    <br>
+    <ng-container *ngIf="post">
+      <input *ngIf="isEditing; else notEditing" type="text" [(ngModel)]="post.title" placeholder="Enter a title">
+      <br>
+      <ng-template #notEditing>
+        <p>{{ post.title }}</p>
+      </ng-template>
+      <img [src]="post.url" alt="Post Image"><br>
+      <input *ngIf="isEditing" type="file" (change)="handleUpdate($event)">
+      <br>
+    </ng-container>
     <button (click)="deletePost()">Delete</button>
-    <button (click)="isEditing ? saveEdit() : toggleEdit()">{{ isEditing ? 'Save' : 'Edit' }}</button>
+    <button (click)="isEditing ? (saveEdit() && toggleEdit()) : toggleEdit()">{{ isEditing ? 'Save' : 'Edit' }}</button>
   </div>
 </div>
