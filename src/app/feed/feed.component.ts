@@ -178,7 +178,7 @@ export class FeedComponent implements OnInit {
     if (this.postToggle) {
       this.postToggle = false;
       this.newPost = {
-        id: 0,
+        id: this.generateUniqueId(),
         albumId: 0,
         title: '',
         url: '',
