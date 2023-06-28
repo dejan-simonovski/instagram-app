@@ -9,8 +9,8 @@
       </div>
       <ng-template #notEditing>
         <p class='details'>{{ post.title }}</p>
-        <p class='details'>{{ post.albumId }}</p>
-        <p class='details'>{{ post.url }}</p>
+        <p class='details'>Album ID: {{ post.albumId }}</p>
+        <p class='details'>URL: {{ post.url }}</p>
       </ng-template>
       <img [src]="post.url" class='imageDetails' alt="Post Image"><br>
       <input *ngIf="isEditing" type="file" (change)="handleUpdate($event)">

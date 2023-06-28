@@ -21,10 +21,17 @@ import { Router } from '@angular/router';
       padding: 10px;
       margin: 5px;
     }
-    
+
     #addButton{
-      display: flex;
-      justify-content: center;
+      text-align: center;
+    }
+    
+    table {
+      margin: 0 auto;
+    }
+
+    td {
+      text-align: center;
     }
   `]
 })
@@ -34,6 +41,7 @@ export class FeedComponent implements OnInit {
   itemsPerPage: number = 15;
   posts: IFeed[] = [];
   totalPages: number = 0;
+  postToggle: boolean = false;
 
   constructor(
     private feedService: FeedService,
@@ -111,24 +119,47 @@ export class FeedComponent implements OnInit {
     this.loadPosts();
   }
 
-  addPost(): void {
-    const newPost: IFeed = {
-      id: this.generateUniqueId(),
-      albumId: 1,
-      title: 'Untitled',
-      url: ' Enter Photo ',
-      thumbnailUrl: ' Enter Photo '
-    };
-    
-    this.feedService.addPost(newPost).subscribe(
-      (response) => {
-        this.router.navigate(['/post', newPost.id]);
-      },
-      (error) => {
-        this.errorMessage = error;
-      }
-    );
+  newPost: IFeed = {
+    id: 0,
+    albumId: 0,
+    title: '',
+    url: '',
+    thumbnailUrl: ''
+  };
+
+  handleFileInput(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      const reader: FileReader = new FileReader();
+      reader.onloadend = () => {
+        this.newPost.url = reader.result as string;
+        this.newPost.thumbnailUrl = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
   }
+
+  addPost(): void {
+    this.postToggle = !this.postToggle;
+    if (this.newPost.albumId && this.newPost.title && this.newPost.url) {
+      const newPost: IFeed = {
+        id: this.generateUniqueId(),
+        albumId: this.newPost.albumId,
+        title: this.newPost.title,
+        url: this.newPost.url,
+        thumbnailUrl: this.newPost.url
+      };
+
+      this.feedService.addPost(newPost).subscribe(
+        (response) => {
+        },
+        (error) => {
+          this.errorMessage = error;
+        }
+      );
+    }
+  }
+
   generateUniqueId(): number {
     return Date.now();
   }
@@ -141,6 +172,50 @@ export class FeedComponent implements OnInit {
   calculateTotalPages(totalPosts: number, itemsPerPage: number): void {
     this.totalPages = this.feedService.countPages(totalPosts, itemsPerPage);
     this.totalPagesArray = Array.from({ length: this.totalPages }, (_, index) => index + 1);
+  }
+  
+  togglePostForm(): void {
+    if (this.postToggle) {
+      this.postToggle = false;
+      this.newPost = {
+        id: 0,
+        albumId: 0,
+        title: '',
+        url: '',
+        thumbnailUrl: ''
+      }; 
+    } else {
+     
+      this.postToggle = true;
+    }
+  }
+  
+  submitPost(): void {
+    this.postToggle = false;
+    if (this.newPost.albumId && this.newPost.title && this.newPost.url) {
+      const newPost: IFeed = {
+        id: this.generateUniqueId(),
+        albumId: this.newPost.albumId,
+        title: this.newPost.title,
+        url: this.newPost.url,
+        thumbnailUrl: this.newPost.url
+      };
+  
+      this.feedService.addPost(newPost).subscribe(
+        (response) => {
+          this.newPost = {
+              id: 0,
+              albumId: 0,
+              title: '',
+              url: '',
+              thumbnailUrl: ''
+            };
+        },
+        (error) => {
+          this.errorMessage = error;
+        }
+      );
+    }
   }
   
 

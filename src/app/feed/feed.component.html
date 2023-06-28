@@ -1,6 +1,28 @@
 <div id="addButton">
-  <button (click)="addPost()"> Add Post </button>
+  <button (click)="togglePostForm()">{{ postToggle ? 'Cancel' : 'Add Post' }}</button>
+  <div *ngIf="postToggle">
+    <table>
+      <tr>
+        <td>Title:</td>
+        <td><input type="text" [(ngModel)]="newPost.title"></td>
+      </tr>
+      <tr>
+        <td>AlbumID:</td>
+        <td><input type="number" min="0" [(ngModel)]="newPost.albumId"></td>
+      </tr>
+      <tr>
+        <td>URL/File:</td>
+        <td>
+          <input type="file" (change)="handleFileInput($event)">
+          <input type="text" [(ngModel)]="newPost.url">
+        </td>
+      </tr>
+    </table>
+    <button (click)="submitPost()">Submit</button>
+  </div>
 </div>
+
+
 <div class="postContainer" *ngFor="let post of posts">
   <div>
     <post

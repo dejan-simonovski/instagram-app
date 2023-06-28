@@ -115,9 +115,9 @@ export class FeedService {
 
   
   addPost(newPost: IFeed): Observable<IFeed> {
+    this.posts.push(newPost);
     return this.http.post<IFeed>(this.feedUrl, newPost).pipe(
       tap((addedPost) => {
-        this.posts.push(newPost); // Add the new post to the posts array
         console.log('Post added successfully');
       }),
       catchError(this.handleError)
