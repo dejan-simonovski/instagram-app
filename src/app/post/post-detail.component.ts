@@ -20,7 +20,7 @@ import { SharedService } from '../shared/shared.service';
 
   .details{
     width: 500px;
-    height: 20px;
+    height: 30px;
     overflow: scroll;
   }
   

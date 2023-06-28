@@ -204,7 +204,7 @@ export class FeedComponent implements OnInit {
       this.feedService.addPost(newPost).subscribe(
         (response) => {
           this.newPost = {
-              id: 0,
+              id: this.generateUniqueId(),
               albumId: 0,
               title: '',
               url: '',
