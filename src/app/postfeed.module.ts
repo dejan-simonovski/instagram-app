@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { FeedComponent } from './feed/feed.component';
 import { PostComponent } from './post/post.component';
 import { PostDetailComponent } from './post/post-detail.component';
-import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [

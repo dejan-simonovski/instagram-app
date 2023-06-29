@@ -25,4 +25,6 @@ import { Component } from '@angular/core';
     width: 100%;
   }`]
 })
-export class AppComponent {}
+export class AppComponent {
+  title='Micro Instagram';
+}
